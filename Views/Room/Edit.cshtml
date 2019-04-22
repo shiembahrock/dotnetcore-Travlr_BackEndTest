@@ -1,0 +1,159 @@
+@model HotelApp.Models.vmRoom
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Room</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="oRoom.RoomId" />
+            <div class="form-group">
+                <!-- <label asp-for="HotelId" class="control-label"></label>
+                <input asp-for="HotelId" class="form-control" />
+                <span asp-validation-for="HotelId" class="text-danger"></span> -->
+                <label asp-for="oRoom.HotelId" class="control-label"></label>  
+                <select asp-for="oRoom.HotelId"   
+                    class="form-control"   
+                    asp-items='@(new SelectList(@ViewBag.HotelList,"HotelId", "HotelName", "oRoom.HotelId"))'
+                    onchange="changeHotel(this);">  
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="oRoom.RoomName" class="control-label"></label>
+                <input asp-for="oRoom.RoomName" class="form-control" />
+                <span asp-validation-for="oRoom.RoomName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="oRoom.MaxOccupancy" class="control-label"></label>
+                <input asp-for="oRoom.MaxOccupancy" class="form-control" />
+                <span asp-validation-for="oRoom.MaxOccupancy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="oRoom.NetRate" class="control-label"></label>
+                <input asp-for="oRoom.NetRate" class="form-control" onchange="getSellRate(this);" />
+                <span asp-validation-for="oRoom.NetRate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="oRoom.SellRate" class="control-label"></label>
+                <input asp-for="oRoom.SellRate" class="form-control" readonly />
+                <span asp-validation-for="oRoom.SellRate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <!-- <label asp-for="CurrencyId" class="control-label"></label>
+                <input asp-for="CurrencyId" class="form-control" />
+                <span asp-validation-for="CurrencyId" class="text-danger"></span> -->
+                <label asp-for="oRoom.CurrencyId" class="control-label"></label>  
+                <select asp-for="oRoom.CurrencyId"   
+                    class="form-control"   
+                    asp-items='@(new SelectList(@ViewBag.CurrencyList,"CurrencyId", "CurrencyName", "oRoom.CurrencyId"))'>  
+                </select>
+            </div>
+            <!-- ====================================================================== -->
+            <div class="form-group">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="cb-all-amenities" onchange="checkAllAmenities(this);" /></th>
+                            <th>Amenities</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.oAmenitiesList)
+                        {                                   
+                            string isChecked = ""; string sAmenitiesIdChecked = "";
+                            foreach(var ra in Model.oRoom.RoomAmenitieses)
+                            {
+                                if(ra.AmenitiesId == item.AmenitiesId)
+                                {
+                                    isChecked = "checked";
+                                    sAmenitiesIdChecked = Convert.ToString(item.AmenitiesId);
+                                    break;
+                                }
+                            }
+                            <tr>
+                                <td>                                    
+                                    <input type="checkbox" name="amenitiesChecked" value="@item.AmenitiesId" onchange="checkAmenities(this,'@item.AmenitiesId');" @isChecked />                                    
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AmenitiesName)                                        
+                                </td>                                
+                            </tr>                            
+                        }                      
+                    </tbody>
+                </table>                
+            </div>            
+            <!-- ====================================================================== -->
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function changeHotel(el){
+            debugger;
+            var HotelList = @Json.Serialize(ViewBag.HotelList);
+            var commRate = 0;
+            for(i in HotelList){
+                var cbHotelId = el.value; //$('#oRoom_HotelId').val();
+                var loopHotelId = HotelList[i].hotelId;
+                if(parseInt(cbHotelId) === loopHotelId){
+                    commRate = HotelList[i].commissionRate;
+                    break;
+                }
+            }
+            $('#oRoom_SellRate').val(parseFloat(commRate) + parseFloat($('#oRoom_NetRate').val()));
+        }
+        function getSellRate(el)
+        {
+            debugger;
+            var HotelList = @Json.Serialize(ViewBag.HotelList);
+            var commRate = 0;
+            for(i in HotelList){
+                var cbHotelId = $('#oRoom_HotelId').val();
+                var loopHotelId = HotelList[i].hotelId;
+                if(parseInt(cbHotelId) === loopHotelId){
+                    commRate = HotelList[i].commissionRate;
+                    break;
+                }
+            }
+            $('#oRoom_SellRate').val(parseFloat(commRate) + parseFloat(el.value));
+        }
+        function checkAllAmenities(el){
+            debugger;
+            var amenitiesAll = $(":checkbox[name='amenitiesChecked']");
+            if(el.checked){                
+                amenitiesAll.prop("checked",true);
+            }else{
+                amenitiesAll.prop("checked",false);
+            }            
+        }
+        function checkAmenities(el, AmenitiesId){
+            debugger;
+            if(el.checked){
+                el.value = AmenitiesId;
+            }else{
+                el.value = '';
+            }
+            var amenitiesChecked = $(":checkbox[name='amenitiesChecked']:checked");
+            var amenitiesAll = $(":checkbox[name='amenitiesChecked']");            
+            if(amenitiesChecked.length == amenitiesAll.length){
+                document.getElementById("cb-all-amenities").checked = true;
+            }else{
+                document.getElementById("cb-all-amenities").checked = false;
+            }
+        }
+    </script>
+}

@@ -1,0 +1,44 @@
+﻿@model IEnumerable<HotelApp.Models.Hotel>
+@{
+    ViewData["Title"] = "Hotel List";
+
+}
+<p>
+    This is for TEST ONLY as Backend Dev. There is no LOGIN and Multi Client (No Table Client).
+    <br><br> API name list :
+    <br>- api/hotelapi
+    <br>- api/roomapi
+    <br>- api/amenitiesapi
+    <br>- api/currencyapi
+    <br>- api/roomamenitiesapi
+    <br>- api/bookingroomapi
+</p>
+
+<h1>@ViewData["Title"]</h1>
+
+@foreach(var hotel in Model)
+{
+    <ul>
+        <li>                
+            @hotel.HotelName
+            <ul>
+                @foreach (var room in hotel.Rooms)
+                {                    
+                    <li>
+                        @room.RoomName 
+                        <a asp-action="Create" asp-controller="BookingRoom" 
+                            asp-route-id="@room.RoomId">Booking</a>
+                        <ul>
+                            @foreach (var roomAmenities in room.RoomAmenitieses)
+                            {
+                                <li>
+                                    @roomAmenities.Amenities.AmenitiesName
+                                </li>
+                            }
+                        </ul>
+                    </li>                    
+                }
+            </ul>                                
+        </li>            
+    </ul>
+}

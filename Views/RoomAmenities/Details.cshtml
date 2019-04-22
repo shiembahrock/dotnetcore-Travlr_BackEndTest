@@ -1,0 +1,30 @@
+@model HotelApp.Models.RoomAmenities
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>RoomAmenities</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.RoomId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.RoomId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AmenitiesId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AmenitiesId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.RoomAmenitiesId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
